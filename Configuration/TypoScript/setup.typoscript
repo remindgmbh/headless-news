@@ -1,0 +1,29 @@
+@import 'EXT:news/Configuration/TypoScript/setup.typoscript'
+
+tt_content.list {
+    fields {
+        content {
+            fields {
+                data {
+                    news_pi1 = USER
+                    news_pi1 {
+                        userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+                        vendorName = GeorgRinger
+                        extensionName = News
+                        pluginName = Pi1
+                        controller = News
+                        view < plugin.tx_news.view
+                        persistence < plugin.tx_news.persistence
+                        settings < plugin.tx_news.settings
+                        settings {
+                            dateFormat = TEXT
+                            dateFormat = M d Y
+                            dateTimeFormat = TEXT
+                            dateTimeFormat = Y-m-d H:i:s
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
