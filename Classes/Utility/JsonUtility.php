@@ -29,8 +29,11 @@ class JsonUtility
 
     private array $settings;
 
-    public function __construct(RenderingContextInterface $renderingContext, Closure $renderChildrenClosure, array $settings)
-    {
+    public function __construct(
+        RenderingContextInterface $renderingContext,
+        Closure $renderChildrenClosure,
+        array $settings
+    ) {
         $this->fileUtility = GeneralUtility::makeInstance(FileUtility::class);
         $this->jsonDecoder = GeneralUtility::makeInstance(JsonDecoder::class);
         $this->renderingContext = $renderingContext;

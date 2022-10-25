@@ -35,7 +35,12 @@ class DetailViewHelper extends AbstractViewHelper
 
         $settings = $arguments[self::ARGUMENT_SETTINGS];
 
-        $jsonUtility = GeneralUtility::makeInstance(JsonUtility::class, $renderingContext, $renderChildrenClosure, $settings);
+        $jsonUtility = GeneralUtility::makeInstance(
+            JsonUtility::class,
+            $renderingContext,
+            $renderChildrenClosure,
+            $settings
+        );
 
         $viewHelperInvoker = $renderingContext->getViewHelperInvoker();
 

@@ -41,7 +41,12 @@ class ListViewHelper extends AbstractViewHelper
         /** @var array $pagination */
         $pagination = $arguments[self::ARGUMENT_PAGINATION];
 
-        $jsonUtility = GeneralUtility::makeInstance(JsonUtility::class, $renderingContext, $renderChildrenClosure, $settings);
+        $jsonUtility = GeneralUtility::makeInstance(
+            JsonUtility::class,
+            $renderingContext,
+            $renderChildrenClosure,
+            $settings
+        );
 
         $viewHelperInvoker = $renderingContext->getViewHelperInvoker();
 
