@@ -6,8 +6,8 @@ namespace Remind\HeadlessNews\ViewHelpers;
 
 use Closure;
 use GeorgRinger\News\Domain\Model\News;
+use Remind\Headless\ViewHelpers\PaginationViewHelper;
 use Remind\HeadlessNews\Utility\JsonUtility;
-use Remind\Typo3Headless\ViewHelpers\PaginationViewHelper;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
