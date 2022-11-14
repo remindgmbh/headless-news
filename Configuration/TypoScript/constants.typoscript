@@ -1,9 +1,1 @@
 @import 'EXT:news/Configuration/TypoScript/constants.typoscript'
-
-plugin.tx_news {
-    view {
-        templateRootPath = EXT:rmnd_headless_news/Resources/Private/Templates/
-        partialRootPath = EXT:rmnd_headless_news/Resources/Private/Partials/
-        layoutRootPath = EXT:rmnd_headless_news/Resources/Private/Layouts/
-    }
-}

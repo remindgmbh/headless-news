@@ -1,0 +1,12 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Remind\HeadlessNews\:
+    resource: '../Classes/*'
+
+  GeorgRinger\News\Controller\NewsController: '@Remind\HeadlessNews\Controller\NewsController'
+  GeorgRinger\News\Controller\CategoryController: '@Remind\HeadlessNews\Controller\CategoryController'
+  GeorgRinger\News\Controller\TagController: '@Remind\HeadlessNews\Controller\TagController'
