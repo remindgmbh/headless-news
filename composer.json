@@ -1,6 +1,6 @@
 {
     "name": "remind/headless-news",
-    "description": "Headless integration for news extension",
+    "description": "REMIND - Headless News",
     "type": "typo3-cms-extension",
     "keywords": ["TYPO3", "CMS", "REMIND", "news", "headless"],
     "license": ["GPL-3.0-or-later"],
