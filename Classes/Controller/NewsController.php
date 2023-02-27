@@ -37,10 +37,15 @@ class NewsController extends BaseNewsController
     {
         parent::listAction($overwriteDemand);
         $variables = $this->view->getRenderingContext()->getVariableProvider()->getAll();
+
+        /** @var \TYPO3\CMS\Core\Pagination\PaginatorInterface $paginator  */
+        $paginator = $variables['pagination']['paginator'];
+
         /** @var \TYPO3\CMS\Extbase\Persistence\QueryResultInterface $newsQueryResult */
-        $newsQueryResult = $variables['news'];
+        $newsQueryResult = $paginator->getPaginatedItems();
 
         $currentPage = $variables['pagination']['currentPage'];
+
         /** @var \TYPO3\CMS\Core\Pagination\PaginationInterface $pagination */
         $pagination = $variables['pagination']['pagination'];
 
