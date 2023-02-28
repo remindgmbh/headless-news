@@ -38,7 +38,7 @@ class TagController extends BaseTagController
         $uri = $this->uriBuilder
             ->reset()
             ->setTargetPageUid((int)$this->settings['listPid'] ?? null)
-            ->uriFor();
+            ->uriFor(null, null, 'News');
 
         $result = [
             'tags' => [
@@ -62,7 +62,7 @@ class TagController extends BaseTagController
             $uri = $this->uriBuilder
                 ->reset()
                 ->setTargetPageUid((int)$this->settings['listPid'])
-                ->uriFor(null, ['overwriteDemand' => ['tags' => $tag->getUid()]]);
+                ->uriFor(null, ['overwriteDemand' => ['tags' => $tag->getUid()]], 'News');
 
             $tagJson = $this->jsonService->serializeTag($tag);
             $tagJson['link'] = $uri;
