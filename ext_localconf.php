@@ -9,7 +9,7 @@ use Remind\HeadlessNews\Controller\CategoryController as HeadlessCategoryControl
 use Remind\HeadlessNews\Controller\NewsController as HeadlessNewsController;
 use Remind\HeadlessNews\Controller\TagController as HeadlessTagController;
 
-defined('TYPO3_MODE') || die('Access denied.');
+defined('TYPO3') || die('Access denied.');
 
 (function () {
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][NewsController::class] = [
