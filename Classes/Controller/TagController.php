@@ -30,6 +30,10 @@ class TagController extends BaseTagController
         $renderingContext = $this->view->getRenderingContext();
         $variables = $renderingContext->getVariableProvider()->getAll();
 
+        /** @var array $pageData */
+        $pageData = $variables['pageData'];
+        $listPid = $this->settings['listPid'] ? ((int) $this->settings['listPid']) : $pageData['uid'];
+
         /** @var \TYPO3\CMS\Extbase\Persistence\QueryResultInterface $tagsQueryResult */
         $tagsQueryResult = $variables['tags'];
 
@@ -37,7 +41,7 @@ class TagController extends BaseTagController
 
         $uri = $this->uriBuilder
             ->reset()
-            ->setTargetPageUid((int)$this->settings['listPid'] ?? null)
+            ->setTargetPageUid($listPid)
             ->uriFor(null, null, 'News');
 
         $result = [
@@ -49,10 +53,7 @@ class TagController extends BaseTagController
                 'list' => [],
             ],
             'settings' => [
-                'orderBy' => $this->settings['orderBy'] ?? null,
-                'orderDirection' => $this->settings['orderDirection'] ?? null,
                 'templateLayout' => $this->settings['templateLayout'] ?? null,
-                'action' => 'tagsList',
             ],
         ];
 
@@ -61,7 +62,7 @@ class TagController extends BaseTagController
 
             $uri = $this->uriBuilder
                 ->reset()
-                ->setTargetPageUid((int)$this->settings['listPid'])
+                ->setTargetPageUid($listPid)
                 ->uriFor(null, ['overwriteDemand' => ['tags' => $tag->getUid()]], 'News');
 
             $tagJson = $this->jsonService->serializeTag($tag);

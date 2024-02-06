@@ -1,26 +1,100 @@
 @import 'EXT:news/Configuration/TypoScript/setup.typoscript'
 
-tt_content.list {
-    fields {
-        content {
-            fields {
-                data {
-                    news_pi1 = USER
-                    news_pi1 {
-                        userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
-                        vendorName = GeorgRinger
-                        extensionName = News
-                        pluginName = Pi1
+lib.news = USER
+lib.news {
+    userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+    vendorName = GeorgRinger
+    extensionName = News
+    view < plugin.tx_news.view
+    persistence < plugin.tx_news.persistence
+    settings < plugin.tx_news.settings
+}
+
+tt_content {
+    news_categorylist =< lib.contentElementWithHeader
+    news_categorylist {
+        fields {
+            content {
+                fields {
+                    data =< lib.news
+                    data {
+                        pluginName = CategoryList
                         controller = News
-                        view < plugin.tx_news.view
-                        persistence < plugin.tx_news.persistence
-                        settings < plugin.tx_news.settings
-                        settings {
-                            dateFormat = TEXT
-                            dateFormat = M d Y
-                            dateTimeFormat = TEXT
-                            dateTimeFormat = Y-m-d H:i:s
-                        }
+                    }
+                }
+            }
+        }
+    }
+
+    news_newsdatemenu =< lib.contentElementWithHeader
+    news_newsdatemenu {
+        fields {
+            content {
+                fields {
+                    data =< lib.news
+                    data {
+                        pluginName = NewsDateMenu
+                        controller = News
+                    }
+                }
+            }
+        }
+    }
+
+    news_newsdetail =< lib.contentElementWithHeader
+    news_newsdetail {
+        fields {
+            content {
+                fields {
+                    data =< lib.news
+                    data {
+                        pluginName = NewsDetail
+                        controller = News
+                    }
+                }
+            }
+        }
+    }
+
+    news_newsliststicky =< lib.contentElementWithHeader
+    news_newsliststicky {
+        fields {
+            content {
+                fields {
+                    data =< lib.news
+                    data {
+                        pluginName = NewsListSticky
+                        controller = News
+                    }
+                }
+            }
+        }
+    }
+
+    news_newsselectedlist =< lib.contentElementWithHeader
+    news_newsselectedlist {
+        fields {
+            content {
+                fields {
+                    data =< lib.news
+                    data {
+                        pluginName = NewsSelectedList
+                        controller = News
+                    }
+                }
+            }
+        }
+    }
+
+    news_taglist =< lib.contentElementWithHeader
+    news_taglist {
+        fields {
+            content {
+                fields {
+                    data =< lib.news
+                    data {
+                        pluginName = TagList
+                        controller = News
                     }
                 }
             }

@@ -55,10 +55,27 @@ class NewsController extends BaseNewsController
                 return $this->newsJsonService->serializeListNews($news);
             }, $newsQueryResult->toArray()),
             'settings' => [
-                'orderBy' => $this->settings['orderBy'],
-                'orderDirection' => $this->settings['orderDirection'],
                 'templateLayout' => $this->settings['templateLayout'],
-                'action' => 'list',
+            ],
+        ];
+
+        return $this->jsonResponse(json_encode($result));
+    }
+
+    public function selectedListAction(): ResponseInterface
+    {
+        parent::selectedListAction();
+        $variables = $this->view->getRenderingContext()->getVariableProvider()->getAll();
+
+        /** @var iterable $news */
+        $news = $variables['news'];
+
+        $result = [
+            'news' => array_map(function (News $news) {
+                return $this->newsJsonService->serializeListNews($news);
+            }, iterator_to_array($news)),
+            'settings' => [
+                'templateLayout' => $this->settings['templateLayout'],
             ],
         ];
 
@@ -96,40 +113,27 @@ class NewsController extends BaseNewsController
             }, explode(',', $news->getTranslatedContentElementIdList())),
             'settings' => [
                 'templateLayout' => $this->settings['templateLayout'],
-                'action' => 'detail',
             ],
         ];
 
         return $this->jsonResponse(json_encode($result));
     }
 
-    /**
-     * TODO: remove function and rename headlessDateMenuAction to dateMenuAction
-     *       once base function returns ResponseInterface
-     *
-     * @param array|null $overwriteDemand
-     *
-     * @return void
-     */
-    public function dateMenuAction(array $overwriteDemand = null): void
-    {
-        $this->forward('headlessDateMenu', null, null, ['overwriteDemand' => $overwriteDemand]);
-    }
-
-    public function headlessDateMenuAction(?array $overwriteDemand = null): ResponseInterface
+    public function dateMenuAction(?array $overwriteDemand = null): ResponseInterface
     {
         parent::dateMenuAction($overwriteDemand);
         $renderingContext = $this->view->getRenderingContext();
         $variables = $renderingContext->getVariableProvider()->getAll();
 
         $data = $variables['data'];
+        $listPid = $variables['listPid'];
 
         $overwriteDemandYear = $overwriteDemand ? (int)($overwriteDemand['year'] ?? false) : false;
         $overwriteDemandMonth = $overwriteDemand ? ($overwriteDemand['month'] ?? false) : false;
 
         $uri = $this->uriBuilder
             ->reset()
-            ->setTargetPageUid((int)$this->settings['listPid'])
+            ->setTargetPageUid($listPid)
             ->uriFor();
 
         $result = [
@@ -142,17 +146,14 @@ class NewsController extends BaseNewsController
                 'list' => [],
             ],
             'settings' => [
-                'orderBy' => $this->settings['orderBy'],
-                'orderDirection' => $this->settings['orderDirection'],
                 'templateLayout' => $this->settings['templateLayout'],
-                'action' => 'dateMenu',
             ],
         ];
 
         foreach ($data['single'] as $yearTitle => $months) {
             $yearUri = $this->uriBuilder
                 ->reset()
-                ->setTargetPageUid((int)$this->settings['listPid'])
+                ->setTargetPageUid($listPid)
                 ->uriFor(null, ['overwriteDemand' => ['year' => $yearTitle]]);
 
             $count = $data['total'][$yearTitle];
@@ -172,7 +173,7 @@ class NewsController extends BaseNewsController
 
                 $monthUri = $this->uriBuilder
                     ->reset()
-                    ->setTargetPageUid((int)$this->settings['listPid'])
+                    ->setTargetPageUid($listPid)
                     ->uriFor(null, ['overwriteDemand' => ['year' => $yearTitle, 'month' => $monthTitle]]);
 
                 $year['months'][] = [

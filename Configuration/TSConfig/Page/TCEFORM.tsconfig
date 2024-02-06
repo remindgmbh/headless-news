@@ -1,0 +1,9 @@
+TCEFORM {
+    tt_content {
+        CType {
+            removeItems := addToList(news_newssearchform)
+            removeItems := addToList(news_newssearchresult)
+            removeItems := addToList(news_pi1)
+        }
+    }
+}

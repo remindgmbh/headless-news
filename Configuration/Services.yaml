@@ -7,6 +7,14 @@ services:
   Remind\HeadlessNews\:
     resource: '../Classes/*'
 
-  GeorgRinger\News\Controller\NewsController: '@Remind\HeadlessNews\Controller\NewsController'
-  GeorgRinger\News\Controller\CategoryController: '@Remind\HeadlessNews\Controller\CategoryController'
-  GeorgRinger\News\Controller\TagController: '@Remind\HeadlessNews\Controller\TagController'
+  GeorgRinger\News\Controller\NewsController:
+    alias: Remind\HeadlessNews\Controller\NewsController
+    public: true
+
+  GeorgRinger\News\Controller\CategoryController:
+    alias: Remind\HeadlessNews\Controller\CategoryController
+    public: true
+
+  GeorgRinger\News\Controller\TagController:
+    alias: Remind\HeadlessNews\Controller\TagController
+    public: true

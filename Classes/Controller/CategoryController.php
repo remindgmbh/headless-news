@@ -33,11 +33,16 @@ class CategoryController extends BaseCategoryController
         /** @var array $categories */
         $categories = $variables['categories'];
 
+        /** @var array $pageData */
+        $pageData = $variables['pageData'];
+
         $overwriteDemandCategories = $overwriteDemand ? (int)($overwriteDemand['categories'] ?? false) : false;
+
+        $listPid = $this->settings['listPid'] ? ((int) $this->settings['listPid']) : $pageData['uid'];
 
         $uri = $this->uriBuilder
             ->reset()
-            ->setTargetPageUid((int)$this->settings['listPid'])
+            ->setTargetPageUid($listPid)
             ->uriFor(null, null, 'News');
 
         $result = [
@@ -49,10 +54,7 @@ class CategoryController extends BaseCategoryController
                 'list' => [],
             ],
             'settings' => [
-                'orderBy' => $this->settings['orderBy'],
-                'orderDirection' => $this->settings['orderDirection'],
                 'templateLayout' => $this->settings['templateLayout'],
-                'action' => 'categoryMenu',
             ],
         ];
 
@@ -63,7 +65,7 @@ class CategoryController extends BaseCategoryController
 
             $uri = $this->uriBuilder
                 ->reset()
-                ->setTargetPageUid((int)$this->settings['listPid'])
+                ->setTargetPageUid($listPid)
                 ->uriFor(null, ['overwriteDemand' => ['categories' => $item->getUid()]], 'News');
 
             $categoryJson = $this->jsonService->serializeCategory($item);
