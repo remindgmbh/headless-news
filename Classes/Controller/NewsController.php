@@ -49,12 +49,18 @@ class NewsController extends BaseNewsController
         /** @var \TYPO3\CMS\Core\Pagination\PaginationInterface $pagination */
         $pagination = $variables['pagination']['pagination'];
 
+        $listLink = $this->uriBuilder
+            ->reset()
+            ->setTargetPageUid((int) $this->settings['listPid'] ?? null)
+            ->build();
+
         $result = [
             'pagination' => $this->jsonService->serializePagination($pagination, 'currentPage', $currentPage),
             'news' => array_map(function (News $news) {
                 return $this->newsJsonService->serializeListNews($news);
             }, $newsQueryResult->toArray()),
             'settings' => [
+                'listLink' => $listLink,
                 'templateLayout' => $this->settings['templateLayout'],
             ],
         ];
@@ -70,11 +76,17 @@ class NewsController extends BaseNewsController
         /** @var iterable $news */
         $news = $variables['news'];
 
+        $listLink = $this->uriBuilder
+            ->reset()
+            ->setTargetPageUid((int) $this->settings['listPid'] ?? null)
+            ->build();
+
         $result = [
             'news' => array_map(function (News $news) {
                 return $this->newsJsonService->serializeListNews($news);
             }, iterator_to_array($news)),
             'settings' => [
+                'listLink' => $listLink,
                 'templateLayout' => $this->settings['templateLayout'],
             ],
         ];
@@ -99,6 +111,11 @@ class NewsController extends BaseNewsController
         /** @var News $news */
         $news = $variables['newsItem'];
 
+        $listLink = $this->uriBuilder
+            ->reset()
+            ->setTargetPageUid((int) $this->settings['backPid'] ?? null)
+            ->build();
+
         $result = [
             'news' => $this->newsJsonService->serializeDetailNews($news),
             'contentElements' => array_map(function ($contentElementId) use ($renderingContext) {
@@ -112,6 +129,7 @@ class NewsController extends BaseNewsController
                 ));
             }, explode(',', $news->getTranslatedContentElementIdList())),
             'settings' => [
+                'listLink' => $listLink,
                 'templateLayout' => $this->settings['templateLayout'],
             ],
         ];
@@ -131,7 +149,12 @@ class NewsController extends BaseNewsController
         $overwriteDemandYear = $overwriteDemand ? (int)($overwriteDemand['year'] ?? false) : false;
         $overwriteDemandMonth = $overwriteDemand ? ($overwriteDemand['month'] ?? false) : false;
 
-        $uri = $this->uriBuilder
+        $listLink = $this->uriBuilder
+            ->reset()
+            ->setTargetPageUid((int) $this->settings['listPid'] ?? null)
+            ->build();
+
+        $allYearsUri = $this->uriBuilder
             ->reset()
             ->setTargetPageUid($listPid)
             ->uriFor();
@@ -139,13 +162,14 @@ class NewsController extends BaseNewsController
         $result = [
             'years' => [
                 'all' => [
-                    'link' => $uri,
+                    'link' => $allYearsUri,
                     'active' => !$overwriteDemandYear,
                     'count' => 0,
                 ],
                 'list' => [],
             ],
             'settings' => [
+                'listLink' => $listLink,
                 'templateLayout' => $this->settings['templateLayout'],
             ],
         ];
