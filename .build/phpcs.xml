@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="PHP_CodeSniffer">
-    <config name="installed_paths" value="../../slevomat/coding-standard"/>
+    <config name="installed_paths" value="../../slevomat/coding-standard" />
     <rule ref="Generic.Arrays.DisallowLongArraySyntax">
         <type>error</type>
     </rule>
     <rule ref="PSR12">
         <type>error</type>
     </rule>
-        <rule ref="Generic.Files.LineLength">
+    <rule ref="Generic.Files.LineLength">
         <type>warning</type>
     </rule>
     <rule ref="SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace">
