@@ -1,0 +1,44 @@
+plugin.tx_solr.index.queue {
+    news = 1
+    news {
+        table = tx_news_domain_model_news
+
+        additionalWhereClause = tx_headless_news_no_search = 0
+
+        fields {
+            title = title
+
+            content = SOLR_CONTENT
+            content {
+                cObject = COA
+                cObject {
+                    10 = TEXT
+                    10 {
+                        field = teaser
+                        noTrimWrap = || |
+                    }
+                    20 = TEXT
+                    20 {
+                        field = bodytext
+                        noTrimWrap = || |
+                    }
+                }
+            }
+
+            internalUrl_stringS = internalurl
+            externalUrl_stringS = externalurl
+
+            searchImage_intS = SOLR_RELATION
+            searchImage_intS {
+                localField = tx_headless_news_search_image
+                foreignLabelField = uid
+            }
+
+            falMedia_intS = SOLR_RELATION
+            falMedia_intS {
+                localField = fal_media
+                foreignLabelField = uid
+            }
+        }
+    }
+}

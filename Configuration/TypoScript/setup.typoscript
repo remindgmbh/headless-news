@@ -1,4 +1,5 @@
 @import 'EXT:news/Configuration/TypoScript/setup.typoscript'
+@import 'EXT:rmnd_headless_news/Configuration/TypoScript/Extensions/*.typoscript'
 
 lib.news = USER
 lib.news {

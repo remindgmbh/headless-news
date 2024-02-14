@@ -18,3 +18,7 @@ services:
   GeorgRinger\News\Controller\TagController:
     alias: Remind\HeadlessNews\Controller\TagController
     public: true
+
+  Remind\HeadlessNews\Event\Listener\ModifySearchDocument:
+    tags:
+      - name: event.listener
