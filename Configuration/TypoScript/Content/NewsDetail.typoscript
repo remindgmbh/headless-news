@@ -1,0 +1,22 @@
+tt_content {
+    news_newsdetail =< lib.contentElementWithHeader
+    news_newsdetail {
+        fields {
+            content {
+                fields {
+                    data = USER
+                    data {
+                        userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+                        vendorName = GeorgRinger
+                        extensionName = News
+                        view < plugin.tx_news.view
+                        persistence < plugin.tx_news.persistence
+                        settings < plugin.tx_news.settings
+                        pluginName = NewsDetail
+                        controller = News
+                    }
+                }
+            }
+        }
+    }
+}
