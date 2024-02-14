@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<xliff version="1.0">
+    <file source-language="en" datatype="plaintext" product-name="headless_news">
+        <header />
+        <body>
+            <trans-unit id="flexform.config.sheet_title">
+                <target>News</target>
+            </trans-unit>
+            <trans-unit id="flexform.config.detail_page">
+                <target>Detailseite</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

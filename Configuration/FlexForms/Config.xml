@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<T3DataStructure>
+    <sheets>
+        <news>
+            <ROOT>
+                <sheetTitle>LLL:EXT:rmnd_headless_news/Resources/Private/Language/locallang.xlf:flexform.config.sheet_title</sheetTitle>
+                <type>array</type>
+                <el>
+                    <news.detailPage>
+                        <label>LLL:EXT:rmnd_headless_news/Resources/Private/Language/locallang.xlf:flexform.config.detail_page</label>
+                        <config>
+                            <type>group</type>
+                            <allowed>pages</allowed>
+                            <maxitems>1</maxitems>
+                            <size>1</size>
+                        </config>
+                    </news.detailPage>
+                </el>
+            </ROOT>
+        </news>
+    </sheets>
+</T3DataStructure>
