@@ -19,6 +19,10 @@ services:
     alias: Remind\HeadlessNews\Controller\TagController
     public: true
 
-  Remind\HeadlessNews\Event\Listener\ModifySearchDocument:
+  Remind\HeadlessNews\EventListener\ModifySolrSearchDocumentEventListener:
+    tags:
+      - name: event.listener
+
+  Remind\HeadlessNews\EventListener\ModifySolrSuggestionDocumentEventListener:
     tags:
       - name: event.listener
