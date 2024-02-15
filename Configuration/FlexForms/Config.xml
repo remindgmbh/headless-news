@@ -3,11 +3,15 @@
     <sheets>
         <news>
             <ROOT>
-                <sheetTitle>LLL:EXT:rmnd_headless_news/Resources/Private/Language/locallang.xlf:flexform.config.sheet_title</sheetTitle>
+                <sheetTitle>
+                    LLL:EXT:rmnd_headless_news/Resources/Private/Language/locallang.xlf:flexform.config.sheet_title</sheetTitle>
                 <type>array</type>
                 <el>
                     <news.detailPage>
-                        <label>LLL:EXT:rmnd_headless_news/Resources/Private/Language/locallang.xlf:flexform.config.detail_page</label>
+                        <label>
+                            LLL:EXT:rmnd_headless_news/Resources/Private/Language/locallang.xlf:flexform.config.detail_page</label>
+                        <description>
+                            LLL:EXT:rmnd_headless_news/Resources/Private/Language/locallang.xlf:flexform.config.detail_page.description</description>
                         <config>
                             <type>group</type>
                             <allowed>pages</allowed>

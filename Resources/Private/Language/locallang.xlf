@@ -9,6 +9,9 @@
             <trans-unit id="flexform.config.detail_page">
                 <source>Detail Page</source>
             </trans-unit>
+            <trans-unit id="flexform.config.detail_page.description">
+                <source>Used for search results</source>
+            </trans-unit>
             <trans-unit id="tx_headless_news_search_image">
                 <source>Search Image</source>
             </trans-unit>
