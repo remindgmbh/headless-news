@@ -2,6 +2,6 @@
 
 defined('TYPO3') || die;
 
-use Remind\Headless\Utility\ConfigUtility;
+use Remind\Headless\Utility\TcaUtility;
 
-ConfigUtility::addFlexForm('FILE:EXT:rmnd_headless_news/Configuration/FlexForms/Config.xml');
+TcaUtility::addPageConfigFlexForm('FILE:EXT:rmnd_headless_news/Configuration/FlexForms/Config.xml');

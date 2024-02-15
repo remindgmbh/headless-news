@@ -19,7 +19,7 @@ final class ModifySearchDocument
         private readonly LinkFactory $linkFactory,
         private readonly JsonService $jsonService,
     ) {
-        $pageConfig = ConfigUtility::getConfig();
+        $pageConfig = ConfigUtility::getRootPageConfig();
         $this->detailPageUid = (int) $pageConfig['news']['detailPage'] ?? 0;
     }
 
