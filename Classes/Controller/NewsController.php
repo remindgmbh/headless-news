@@ -49,6 +49,11 @@ class NewsController extends BaseNewsController
         /** @var \TYPO3\CMS\Core\Pagination\PaginationInterface $pagination */
         $pagination = $variables['pagination']['pagination'];
 
+        /** @var \TYPO3\CMS\Extbase\Persistence\Generic\QueryResult $selectedCategories */
+        $selectedCategories = $variables['categories'];
+
+        $categories = $this->newsJsonService->serializeCategories($selectedCategories->toArray());
+
         $listLink = $this->uriBuilder
             ->reset()
             ->setTargetPageUid((int) $this->settings['listPid'] ?? null)
@@ -60,6 +65,7 @@ class NewsController extends BaseNewsController
                 return $this->newsJsonService->serializeListNews($news);
             }, $newsQueryResult->toArray()),
             'settings' => [
+                'categories' => $categories,
                 'listLink' => $listLink,
                 'templateLayout' => $this->settings['templateLayout'],
             ],

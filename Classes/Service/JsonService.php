@@ -129,7 +129,7 @@ class JsonService
     /**
      * @param Category[] $categories
      */
-    private function serializeCategories(array $categories): array
+    public function serializeCategories(array $categories): array
     {
         return array_map(function (Category $category) {
             return $this->serializeCategory($category);
