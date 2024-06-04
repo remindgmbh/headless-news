@@ -52,7 +52,10 @@ class NewsController extends BaseNewsController
         /** @var \TYPO3\CMS\Extbase\Persistence\Generic\QueryResult $selectedCategories */
         $selectedCategories = $variables['categories'];
 
-        $categories = $this->newsJsonService->serializeCategories($selectedCategories->toArray());
+        $categories = [];
+        if ($selectedCategories) {
+            $categories = $this->newsJsonService->serializeCategories($selectedCategories->toArray());
+        }
 
         $listLink = $this->uriBuilder
             ->reset()
