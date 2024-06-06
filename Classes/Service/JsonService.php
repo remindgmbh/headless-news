@@ -12,6 +12,8 @@ use GeorgRinger\News\Domain\Model\FileReference;
 use GeorgRinger\News\Domain\Model\News;
 use GeorgRinger\News\Domain\Model\Tag;
 use GeorgRinger\News\ViewHelpers\LinkViewHelper;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Remind\HeadlessNews\Event\SerializeNewsEvent;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextFactory;
@@ -28,6 +30,7 @@ class JsonService
         private readonly FileUtility $fileUtility,
         private readonly JsonDecoder $jsonDecoder,
         private readonly ContentObjectRenderer $contentObjectRenderer,
+        private readonly EventDispatcherInterface $eventDispatcher,
         ConfigurationManagerInterface $configurationManager,
         RenderingContextFactory $renderingContextFactory,
     ) {
@@ -101,7 +104,7 @@ class JsonService
 
     private function serializeNews(News $news): array
     {
-        return [
+        $data = [
             'uid' => $news->getUid(),
             'title' => $news->getTitle(),
             'teaser' => $news->getTeaser(),
@@ -124,6 +127,11 @@ class JsonService
             ],
             'pathSegment' => $news->getPathSegment(),
         ];
+
+        $event = $this->eventDispatcher->dispatch(new SerializeNewsEvent($news, $data));
+        $extendedData = $event->getValues();
+
+        return $extendedData;
     }
 
     /**
