@@ -26,3 +26,6 @@ services:
   Remind\HeadlessNews\EventListener\ModifySolrSuggestionDocumentEventListener:
     tags:
       - name: event.listener
+
+  Remind\HeadlessNews\Service\JsonService:
+    shared: false
