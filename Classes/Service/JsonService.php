@@ -6,6 +6,7 @@ namespace Remind\HeadlessNews\Service;
 
 use DateTime;
 use FriendsOfTYPO3\Headless\Json\JsonDecoder;
+use FriendsOfTYPO3\Headless\Utility\File\ProcessingConfiguration;
 use FriendsOfTYPO3\Headless\Utility\FileUtility;
 use GeorgRinger\News\Domain\Model\Category;
 use GeorgRinger\News\Domain\Model\FileReference;
@@ -25,6 +26,7 @@ class JsonService
     private ViewHelperInvoker $viewHelperInvoker;
     private RenderingContext $renderingContext;
     private array $settings;
+    private array $assetProcessingConfiguration;
 
     public function __construct(
         private readonly FileUtility $fileUtility,
@@ -36,6 +38,8 @@ class JsonService
     ) {
         $this->renderingContext = $renderingContextFactory->create();
         $this->viewHelperInvoker = $this->renderingContext->getViewHelperInvoker();
+        $typoscript = $configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+        $this->assetProcessingConfiguration = $typoscript['lib.']['assetProcessingConfiguration.'];
         $this->settings = $configurationManager->getConfiguration(
             ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
         );
@@ -167,7 +171,7 @@ class JsonService
     private function serializeFile(FileReference $file): array
     {
         $originalResource = $file->getOriginalResource();
-        $processedFile = $this->fileUtility->processFile($originalResource);
+        $processedFile = $this->fileUtility->process($originalResource, ProcessingConfiguration::fromOptions($this->assetProcessingConfiguration));
         return $this->jsonDecoder->decode($processedFile);
     }
 }
