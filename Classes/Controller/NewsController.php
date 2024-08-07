@@ -8,6 +8,7 @@ use GeorgRinger\News\Controller\NewsController as BaseNewsController;
 use GeorgRinger\News\Domain\Model\News;
 use Psr\Http\Message\ResponseInterface;
 use Remind\Headless\Service\JsonService;
+use Remind\HeadlessNews\BreadcrumbTitle\NewsBreadcrumbTitleProvider;
 use Remind\HeadlessNews\Service\JsonService as NewsJsonService;
 use TYPO3\CMS\Fluid\ViewHelpers\CObjectViewHelper;
 
@@ -15,6 +16,7 @@ class NewsController extends BaseNewsController
 {
     private ?JsonService $jsonService = null;
     private ?NewsJsonService $newsJsonService = null;
+    private ?NewsBreadcrumbTitleProvider $newsBreadcrumbTitleProvider = null;
 
     public function injectJsonService(JsonService $jsonService): void
     {
@@ -24,6 +26,12 @@ class NewsController extends BaseNewsController
     public function injectNewsJsonService(NewsJsonService $newsJsonService): void
     {
         $this->newsJsonService = $newsJsonService;
+    }
+
+    public function injectNewsBreadcrumbTitleProvider(
+        NewsBreadcrumbTitleProvider $newsBreadcrumbTitleProvider
+    ): void {
+        $this->newsBreadcrumbTitleProvider = $newsBreadcrumbTitleProvider;
     }
 
     /**
@@ -142,6 +150,8 @@ class NewsController extends BaseNewsController
                 'templateLayout' => $this->settings['templateLayout'],
             ],
         ];
+
+        $this->newsBreadcrumbTitleProvider->setTitle($news->getTitle());
 
         return $this->jsonResponse(json_encode($result));
     }

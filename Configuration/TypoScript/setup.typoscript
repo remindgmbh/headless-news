@@ -1,3 +1,11 @@
 @import 'EXT:news/Configuration/TypoScript/setup.typoscript'
 @import 'EXT:rmnd_headless_news/Configuration/TypoScript/Content/*.typoscript'
 @import 'EXT:rmnd_headless_news/Configuration/TypoScript/Extensions/*.typoscript'
+
+config {
+    breadcrumbTitleProviders {
+        rmnd_headless_news {
+            provider = Remind\HeadlessNews\BreadcrumbTitle\NewsBreadcrumbTitleProvider
+        }
+    }
+}
