@@ -59,22 +59,50 @@ class CategoryController extends BaseCategoryController
         ];
 
         foreach ($categories as $category) {
-
-            /** @var \GeorgRinger\News\Domain\Model\Category $item */
-            $item = $category['item'];
-
-            $uri = $this->uriBuilder
-                ->reset()
-                ->setTargetPageUid($listPid)
-                ->uriFor(null, ['overwriteDemand' => ['categories' => $item->getUid()]], 'News');
-
-            $categoryJson = $this->jsonService->serializeCategory($item);
-            $categoryJson['link'] = $uri;
-            $categoryJson['active'] = $overwriteDemandCategories === $item->getUid();
-
-            $result['categories']['list'][] = $categoryJson;
+            $result['categories']['list'][] = $this->processCategory(
+                $category,
+                $listPid,
+                $overwriteDemandCategories
+            );
         }
 
         return $this->jsonResponse(json_encode($result));
+    }
+
+    /**
+     * Process category
+     *
+     * @param array $category
+     * @param int $listPid
+     * @param mixed $overwriteDemandCategories
+     *
+     * @return array
+     */
+    protected function processCategory(array $category, int $listPid, mixed $overwriteDemandCategories): array
+    {
+        /** @var \GeorgRinger\News\Domain\Model\Category $item */
+        $item = $category['item'];
+
+        $uri = $this->uriBuilder
+            ->reset()
+            ->setTargetPageUid($listPid)
+            ->uriFor(null, ['overwriteDemand' => ['categories' => $item->getUid()]], 'News');
+
+        $categoryJson = $this->jsonService->serializeCategory($item);
+        $categoryJson['link'] = $uri;
+        $categoryJson['active'] = $overwriteDemandCategories === $item->getUid();
+
+        if (isset($category['children'])) {
+            $categoryJson['children'] = [];
+            foreach ($category['children'] as $childCategory) {
+                $categoryJson['children'][] = $this->processCategory(
+                    $childCategory,
+                    $listPid,
+                    $overwriteDemandCategories
+                );
+            }
+        }
+
+        return $categoryJson;
     }
 }
