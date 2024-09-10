@@ -14,6 +14,7 @@ use GeorgRinger\News\Domain\Model\News;
 use GeorgRinger\News\Domain\Model\Tag;
 use GeorgRinger\News\ViewHelpers\LinkViewHelper;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Remind\HeadlessNews\Event\SerializeCategoryEvent;
 use Remind\HeadlessNews\Event\SerializeNewsEvent;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
@@ -75,7 +76,7 @@ class JsonService
 
     public function serializeCategory(Category $category): array
     {
-        return [
+        $data = [
             'uid' => $category->getUid(),
             'pid' => $category->getPid(),
             'title' => $category->getTitle(),
@@ -88,6 +89,11 @@ class JsonService
                 'text' => $category->getSeoText(),
             ],
         ];
+
+        $event = $this->eventDispatcher->dispatch(new SerializeCategoryEvent($category, $data));
+        $extendedData = $event->getValues();
+
+        return $extendedData;
     }
 
     public function serializeTag(Tag $tag): array
