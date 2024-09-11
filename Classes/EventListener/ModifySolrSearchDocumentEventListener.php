@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Remind\HeadlessNews\EventListener;
 
-use Remind\Headless\Service\JsonService;
+use Remind\Headless\Service\FilesService;
 use Remind\HeadlessSolr\Event\ModifySearchDocumentEvent;
 
 final class ModifySolrSearchDocumentEventListener extends AbstractModifySolrDocumentEventListener
 {
-    private ?JsonService $jsonService = null;
+    private ?FilesService $filesService = null;
 
-    public function injectJsonService(JsonService $jsonService): void
+    public function injectFilesService(FilesService $filesService): void
     {
-        $this->jsonService = $jsonService;
+        $this->filesService = $filesService;
     }
 
     public function __invoke(ModifySearchDocumentEvent $event): void
@@ -25,7 +25,7 @@ final class ModifySolrSearchDocumentEventListener extends AbstractModifySolrDocu
         $imageUid = $searchResult['searchImage_intS'] ?? $searchResult['falMedia_intS'] ?? null;
 
         if ($imageUid) {
-            $document['image'] = $this->jsonService?->processImage($imageUid);
+            $document['image'] = $this->filesService?->processImage($imageUid);
         }
 
         $event->setDocument($document);
