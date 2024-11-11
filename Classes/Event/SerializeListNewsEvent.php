@@ -2,8 +2,6 @@
 
 namespace Remind\HeadlessNews\Event;
 
-use GeorgRinger\News\Domain\Model\News;
-
 final class SerializeListNewsEvent
 {
     /**
