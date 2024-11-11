@@ -15,6 +15,7 @@ use GeorgRinger\News\Domain\Model\Tag;
 use GeorgRinger\News\ViewHelpers\LinkViewHelper;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Remind\HeadlessNews\Event\SerializeCategoryEvent;
+use Remind\HeadlessNews\Event\SerializeListNewsEvent;
 use Remind\HeadlessNews\Event\SerializeNewsEvent;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
@@ -57,7 +58,11 @@ class JsonService
             function () {
             }
         );
-        return $result;
+
+        $event = $this->eventDispatcher->dispatch(new SerializeListNewsEvent($result));
+        $extendedResult = $event->getValues();
+
+        return $extendedResult;
     }
 
     public function serializeDetailNews(News $news): array
