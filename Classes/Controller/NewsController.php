@@ -9,6 +9,7 @@ use GeorgRinger\News\Domain\Model\News;
 use Psr\Http\Message\ResponseInterface;
 use Remind\Headless\Service\JsonService;
 use Remind\HeadlessNews\BreadcrumbTitle\NewsBreadcrumbTitleProvider;
+use Remind\HeadlessNews\Event\NewsListActionEvent;
 use Remind\HeadlessNews\Service\JsonService as NewsJsonService;
 use TYPO3\CMS\Fluid\ViewHelpers\CObjectViewHelper;
 
@@ -81,6 +82,9 @@ class NewsController extends BaseNewsController
                 'templateLayout' => $this->settings['templateLayout'],
             ],
         ];
+
+        $event = $this->eventDispatcher->dispatch(new NewsListActionEvent($result, $this->settings));
+        $result = $event->getValues();
 
         return $this->jsonResponse(json_encode($result));
     }
