@@ -46,7 +46,7 @@
     "require": {
         "georgringer/news": "^11.4",
         "php": "^8.3",
-        "remind/headless": "^4.0 | dev-develop",
+        "remind/headless": "^5.0 | ^4.0 | dev-develop",
         "typo3/cms-core": "^12.4"
     },
     "require-dev": {
