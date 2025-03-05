@@ -26,8 +26,17 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperInvoker;
 class JsonService
 {
     private ViewHelperInvoker $viewHelperInvoker;
+
     private RenderingContext $renderingContext;
+
+    /**
+     * @var mixed[]
+     */
     private array $settings;
+
+    /**
+     * @var mixed[]
+     */
     private array $assetProcessingConfiguration;
 
     public function __construct(
@@ -47,6 +56,9 @@ class JsonService
         );
     }
 
+    /**
+     * @return mixed[]
+     */
     public function serializeListNews(News $news): array
     {
         $result = $this->serializeNews($news);
@@ -55,7 +67,7 @@ class JsonService
             LinkViewHelper::class,
             ['newsItem' => $news, 'settings' => $this->settings, 'uriOnly' => true],
             $this->renderingContext,
-            function () {
+            function (): void {
             }
         );
 
@@ -65,6 +77,9 @@ class JsonService
         return $extendedResult;
     }
 
+    /**
+     * @return mixed[]
+     */
     public function serializeDetailNews(News $news): array
     {
         $result = $this->serializeNews($news);
@@ -73,26 +88,29 @@ class JsonService
         $this->contentObjectRenderer->start([]);
         $result['bodytext'] = $this->contentObjectRenderer->parseFunc(
             $news->getBodytext(),
-            [],
+            null,
             '< lib.parseFunc_links'
         );
         return $result;
     }
 
+    /**
+     * @return mixed[]
+     */
     public function serializeCategory(Category $category): array
     {
         $data = [
-            'uid' => $category->getUid(),
-            'pid' => $category->getPid(),
-            'title' => $category->getTitle(),
             'description' => $category->getDescription(),
-            'slug' => $category->getSlug(),
+            'pid' => $category->getPid(),
             'seo' => [
-                'title' => $category->getSeoTitle(),
                 'description' => $category->getSeoDescription(),
                 'headline' => $category->getSeoHeadline(),
                 'text' => $category->getSeoText(),
+                'title' => $category->getSeoTitle(),
             ],
+            'slug' => $category->getSlug(),
+            'title' => $category->getTitle(),
+            'uid' => $category->getUid(),
         ];
 
         $event = $this->eventDispatcher->dispatch(new SerializeCategoryEvent($category, $data));
@@ -101,56 +119,28 @@ class JsonService
         return $extendedData;
     }
 
+    /**
+     * @return mixed[]
+     */
     public function serializeTag(Tag $tag): array
     {
         return [
-            'uid' => $tag->getUid(),
             'pid' => $tag->getPid(),
-            'title' => $tag->getTitle(),
-            'slug' => $tag->getSlug(),
             'seo' => [
-                'title' => $tag->getSeoTitle(),
                 'description' => $tag->getSeoDescription(),
                 'headline' => $tag->getSeoHeadline(),
                 'text' => $tag->getSeoText(),
+                'title' => $tag->getSeoTitle(),
             ],
+            'slug' => $tag->getSlug(),
+            'title' => $tag->getTitle(),
+            'uid' => $tag->getUid(),
         ];
-    }
-
-    private function serializeNews(News $news): array
-    {
-        $data = [
-            'uid' => $news->getUid(),
-            'title' => $news->getTitle(),
-            'teaser' => $news->getTeaser(),
-            'isTopNews' => $news->getIstopnews(),
-            'crDate' => $news->getCrdate()?->format(DateTime::ISO8601),
-            'tstamp' => $news->getTstamp()?->format(DateTime::ISO8601),
-            'datetime' => $news->getDatetime()?->format(DateTime::ISO8601),
-            'archive' => $news->getArchive()?->format(DateTime::ISO8601),
-            'author' => [
-                'name' => $news->getAuthor(),
-                'email' => $news->getAuthorEmail(),
-            ],
-            'relatedFiles' => $this->serializeFiles($news->getRelatedFiles()->toArray()),
-            'categories' => $this->serializeCategories($news->getCategories()->toArray()),
-            'tags' => $this->serializeTags($news->getTags()->toArray()),
-            'metaData' => [
-                'keywords' => $news->getKeywords(),
-                'description' => $news->getDescription(),
-                'alternativeTitle' => $news->getAlternativeTitle(),
-            ],
-            'pathSegment' => $news->getPathSegment(),
-        ];
-
-        $event = $this->eventDispatcher->dispatch(new SerializeNewsEvent($news, $data));
-        $extendedData = $event->getValues();
-
-        return $extendedData;
     }
 
     /**
      * @param Category[] $categories
+     * @return mixed[]
      */
     public function serializeCategories(array $categories): array
     {
@@ -160,7 +150,43 @@ class JsonService
     }
 
     /**
+     * @return mixed[]
+     */
+    private function serializeNews(News $news): array
+    {
+        $data = [
+            'archive' => $news->getArchive()?->format(DateTime::ISO8601),
+            'author' => [
+                'email' => $news->getAuthorEmail(),
+                'name' => $news->getAuthor(),
+            ],
+            'categories' => $this->serializeCategories($news->getCategories()?->toArray() ?? []),
+            'crDate' => $news->getCrdate()->format(DateTime::ISO8601),
+            'datetime' => $news->getDatetime()?->format(DateTime::ISO8601),
+            'isTopNews' => $news->getIstopnews(),
+            'metaData' => [
+                'alternativeTitle' => $news->getAlternativeTitle(),
+                'description' => $news->getDescription(),
+                'keywords' => $news->getKeywords(),
+            ],
+            'pathSegment' => $news->getPathSegment(),
+            'relatedFiles' => $this->serializeFiles($news->getRelatedFiles()?->toArray() ?? []),
+            'tags' => $this->serializeTags($news->getTags()?->toArray() ?? []),
+            'teaser' => $news->getTeaser(),
+            'title' => $news->getTitle(),
+            'tstamp' => $news->getTstamp()->format(DateTime::ISO8601),
+            'uid' => $news->getUid(),
+        ];
+
+        $event = $this->eventDispatcher->dispatch(new SerializeNewsEvent($news, $data));
+        $extendedData = $event->getValues();
+
+        return $extendedData;
+    }
+
+    /**
      * @param Tag[] $tags
+     * @return mixed[]
      */
     private function serializeTags(array $tags): array
     {
@@ -171,6 +197,7 @@ class JsonService
 
     /**
      * @param FileReference[] $files
+     * @return mixed[]
      */
     private function serializeFiles(array $files): array
     {
@@ -179,6 +206,9 @@ class JsonService
         }, $files);
     }
 
+    /**
+     * @return mixed[]
+     */
     private function serializeFile(FileReference $file): array
     {
         $originalResource = $file->getOriginalResource();

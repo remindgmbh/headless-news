@@ -35,42 +35,43 @@
     "config": {
         "optimize-autoloader": true,
         "apcu-autoloader": true,
-        "vendor-dir": ".build/vendor",
-        "bin-dir": ".build/bin",
         "allow-plugins": {
             "typo3/cms-composer-installers": true,
             "typo3/class-alias-loader": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true
         }
     },
     "require": {
-        "georgringer/news": "^11.4",
-        "php": "^8.3",
-        "remind/headless": "^5.0 | ^4.0 | dev-develop",
-        "typo3/cms-core": "^12.4"
+        "georgringer/news": "^12.2",
+        "php": "^8",
+        "remind/headless": "^6.0 | dev-develop | 13.x-dev",
+        "typo3/cms-core": "^13.4"
     },
     "require-dev": {
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^1.11",
+        "remind/coding-standard": "^1.0",
+        "saschaegerer/phpstan-typo3": "^1.10",
         "slevomat/coding-standard": "^8.14",
-        "squizlabs/php_codesniffer": "^3.7"
+        "squizlabs/php_codesniffer": "^3.7",
+        "remind/headless-solr": "^4.0 | dev-develop | 13.x-dev"
     },
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://composer.remind.de/",
-            "canonical": false
-        }
-    ],
     "minimum-stability": "dev",
     "prefer-stable": true,
     "extra": {
         "typo3/cms": {
-            "cms-package-dir": "{$vendor-dir}/typo3/cms",
-            "web-dir": ".build/web",
             "extension-key": "rmnd_headless_news"
         }
     },
     "scripts": {
-        "phpcs": "@php ./.build/bin/phpcs --standard=.build/phpcs.xml --extensions=php --ignore=.build --report=full -n .",
-        "phpcbf": "@php ./.build/bin/phpcbf --standard=.build/phpcs.xml --extensions=php --ignore=.build ."
+        "phpcs": "@php ./vendor/bin/phpcs --standard=phpcs.xml --extensions=php --report=full -n .",
+        "phpcbf": "@php ./vendor/bin/phpcbf --standard=phpcs.xml --extensions=php .",
+        "phpstan": "@php ./vendor/bin/phpstan analyse -c phpstan.neon",
+        "static-analysis": [
+            "@composer phpcs",
+            "@composer phpstan"
+        ]
     }
 }

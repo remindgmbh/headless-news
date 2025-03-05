@@ -9,6 +9,9 @@ use Psr\Http\Message\ResponseInterface;
 use Remind\HeadlessNews\Service\JsonService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+/**
+ * @property \TYPO3Fluid\Fluid\View\AbstractTemplateView $view
+ */
 class CategoryController extends BaseCategoryController
 {
     private ?JsonService $jsonService = null;
@@ -19,11 +22,7 @@ class CategoryController extends BaseCategoryController
     }
 
     /**
-     * List categories
-     *
-     * @param array $overwriteDemand
-     *
-     * @return ResponseInterface
+     * @param mixed[] $overwriteDemand
      */
     public function listAction(array $overwriteDemand = null): ResponseInterface
     {
@@ -31,10 +30,10 @@ class CategoryController extends BaseCategoryController
 
         $variables = $this->view->getRenderingContext()->getVariableProvider()->getAll();
 
-        /** @var array $categories */
+        /** @var mixed[] $categories */
         $categories = $variables['categories'];
 
-        /** @var array $pageData */
+        /** @var mixed[] $pageData */
         $pageData = $variables['pageData'];
 
         $overwriteDemandCategories = $overwriteDemand ? (int) ($overwriteDemand['categories'] ?? false) : false;
@@ -49,8 +48,8 @@ class CategoryController extends BaseCategoryController
         $result = [
             'categories' => [
                 'all' => [
-                    'link' => $uri,
                     'active' => !$overwriteDemandCategories,
+                    'link' => $uri,
                 ],
                 'list' => [],
             ],
@@ -67,17 +66,12 @@ class CategoryController extends BaseCategoryController
             );
         }
 
-        return $this->jsonResponse(json_encode($result));
+        return $this->jsonResponse(json_encode($result) ?: null);
     }
 
     /**
-     * Process category
-     *
-     * @param array $category
-     * @param int $listPid
-     * @param mixed $overwriteDemandCategories
-     *
-     * @return array
+     * @param mixed[] $category
+     * @return mixed[]
      */
     protected function processCategory(array $category, int $listPid, mixed $overwriteDemandCategories): array
     {
@@ -89,7 +83,7 @@ class CategoryController extends BaseCategoryController
             ->setTargetPageUid($listPid)
             ->uriFor(null, ['overwriteDemand' => ['categories' => $item->getUid()]], 'News');
 
-        $categoryJson = $this->jsonService->serializeCategory($item);
+        $categoryJson = $this->jsonService?->serializeCategory($item);
         $categoryJson['link'] = $uri;
         $categoryJson['active'] = $overwriteDemandCategories === $item->getUid();
 

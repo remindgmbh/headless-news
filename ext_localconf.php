@@ -11,7 +11,7 @@ use Remind\HeadlessNews\Controller\TagController as HeadlessTagController;
 
 defined('TYPO3') || die('Access denied.');
 
-(function () {
+(function (): void {
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][NewsController::class] = [
         'className' => HeadlessNewsController::class,
     ];
