@@ -13,10 +13,15 @@ use Remind\HeadlessNews\Event\NewsListActionEvent;
 use Remind\HeadlessNews\Service\JsonService as NewsJsonService;
 use TYPO3\CMS\Fluid\ViewHelpers\CObjectViewHelper;
 
+/**
+ * @property \TYPO3Fluid\Fluid\View\AbstractTemplateView $view
+ */
 class NewsController extends BaseNewsController
 {
     private ?JsonService $jsonService = null;
+
     private ?NewsJsonService $newsJsonService = null;
+
     private ?NewsBreadcrumbTitleProvider $newsBreadcrumbTitleProvider = null;
 
     public function injectJsonService(JsonService $jsonService): void
@@ -36,21 +41,18 @@ class NewsController extends BaseNewsController
     }
 
     /**
-     * Output a list view of news
-     *
-     * @param array|null $overwriteDemand
-     *
-     * @return ResponseInterface
+     * @param mixed[]|null $overwriteDemand
      */
     public function listAction(array $overwriteDemand = null): ResponseInterface
     {
         parent::listAction($overwriteDemand);
+
         $variables = $this->view->getRenderingContext()->getVariableProvider()->getAll();
 
         /** @var \TYPO3\CMS\Core\Pagination\PaginatorInterface $paginator  */
         $paginator = $variables['pagination']['paginator'];
 
-        /** @var \TYPO3\CMS\Extbase\Persistence\QueryResultInterface $newsQueryResult */
+        /** @var \TYPO3\CMS\Extbase\Persistence\QueryResultInterface<News> $newsQueryResult */
         $newsQueryResult = $paginator->getPaginatedItems();
 
         $currentPage = $variables['pagination']['currentPage'];
@@ -58,26 +60,26 @@ class NewsController extends BaseNewsController
         /** @var \TYPO3\CMS\Core\Pagination\PaginationInterface $pagination */
         $pagination = $variables['pagination']['pagination'];
 
-        /** @var \TYPO3\CMS\Extbase\Persistence\Generic\QueryResult $selectedCategories */
+        /** @var \TYPO3\CMS\Extbase\Persistence\Generic\QueryResult<\GeorgRinger\News\Domain\Model\Category> | null $selectedCategories */
         $selectedCategories = $variables['categories'];
-
-        $categories = [];
-        if ($selectedCategories) {
-            $categories = $this->newsJsonService->serializeCategories($selectedCategories->toArray());
-        }
 
         $listLink = $this->uriBuilder
             ->reset()
-            ->setTargetPageUid((int) $this->settings['listPid'] ?? null)
+            ->setTargetPageUid((int) ($this->settings['listPid'] ?? null))
             ->build();
 
         $result = [
-            'pagination' => $this->jsonService->serializePagination($pagination, 'currentPage', $currentPage),
             'news' => array_map(function (News $news) {
-                return $this->newsJsonService->serializeListNews($news);
+                return $this->newsJsonService?->serializeListNews($news);
             }, $newsQueryResult->toArray()),
+            'pagination' => $this->jsonService?->serializePagination(
+                $this->uriBuilder,
+                $pagination,
+                'currentPage',
+                $currentPage
+            ),
             'settings' => [
-                'categories' => $categories,
+                'categories' => $this->newsJsonService?->serializeCategories($selectedCategories?->toArray() ?? []),
                 'listLink' => $listLink,
                 'templateLayout' => $this->settings['templateLayout'],
             ],
@@ -86,7 +88,7 @@ class NewsController extends BaseNewsController
         $event = $this->eventDispatcher->dispatch(new NewsListActionEvent($result, $this->settings));
         $result = $event->getValues();
 
-        return $this->jsonResponse(json_encode($result));
+        return $this->jsonResponse(json_encode($result) ?: null);
     }
 
     public function selectedListAction(): ResponseInterface
@@ -94,17 +96,17 @@ class NewsController extends BaseNewsController
         parent::selectedListAction();
         $variables = $this->view->getRenderingContext()->getVariableProvider()->getAll();
 
-        /** @var iterable $news */
+        /** @var News[] $news */
         $news = $variables['news'];
 
         $listLink = $this->uriBuilder
             ->reset()
-            ->setTargetPageUid((int) $this->settings['listPid'] ?? null)
+            ->setTargetPageUid((int) ($this->settings['listPid'] ?? null))
             ->build();
 
         $result = [
             'news' => array_map(function (News $news) {
-                return $this->newsJsonService->serializeListNews($news);
+                return $this->newsJsonService?->serializeListNews($news);
             }, iterator_to_array($news)),
             'settings' => [
                 'listLink' => $listLink,
@@ -112,18 +114,17 @@ class NewsController extends BaseNewsController
             ],
         ];
 
-        return $this->jsonResponse(json_encode($result));
+        return $this->jsonResponse(json_encode($result) ?: null);
     }
 
     /**
-     * Single view of a news record
+     * Missing news parameter type hint leads to exception in ActionController
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint
      *
-     * @param \GeorgRinger\News\Domain\Model\News $news news item
-     * @param int $currentPage current page for optional pagination
-     *
-     * @return ResponseInterface
+     * @param News $news
+     * @param int $currentPage // phpcs:ignore SlevomatCodingStandard.TypeHints.ParameterTypeHint.UselessAnnotation
      */
-    public function detailAction(News $news = null, $currentPage = 1): ResponseInterface
+    public function detailAction(?News $news = null, $currentPage = 1): ResponseInterface
     {
         parent::detailAction($news, $currentPage);
         $renderingContext = $this->view->getRenderingContext();
@@ -134,11 +135,10 @@ class NewsController extends BaseNewsController
 
         $listLink = $this->uriBuilder
             ->reset()
-            ->setTargetPageUid((int) $this->settings['backPid'] ?? null)
+            ->setTargetPageUid((int) ($this->settings['backPid'] ?? null))
             ->build();
 
         $result = [
-            'news' => $this->newsJsonService->serializeDetailNews($news),
             'contentElements' => array_map(function ($contentElementId) use ($renderingContext) {
                 return json_decode($renderingContext->getViewHelperInvoker()->invoke(
                     CObjectViewHelper::class,
@@ -149,17 +149,21 @@ class NewsController extends BaseNewsController
                     $renderingContext
                 ));
             }, explode(',', $news->getTranslatedContentElementIdList())),
+            'news' => $this->newsJsonService?->serializeDetailNews($news),
             'settings' => [
                 'listLink' => $listLink,
                 'templateLayout' => $this->settings['templateLayout'],
             ],
         ];
 
-        $this->newsBreadcrumbTitleProvider->setTitle($news->getTitle());
+        $this->newsBreadcrumbTitleProvider?->setTitle($news->getTitle());
 
-        return $this->jsonResponse(json_encode($result));
+        return $this->jsonResponse(json_encode($result) ?: null);
     }
 
+    /**
+     * @param mixed[] $overwriteDemand
+     */
     public function dateMenuAction(?array $overwriteDemand = null): ResponseInterface
     {
         parent::dateMenuAction($overwriteDemand);
@@ -174,7 +178,7 @@ class NewsController extends BaseNewsController
 
         $listLink = $this->uriBuilder
             ->reset()
-            ->setTargetPageUid((int) $this->settings['listPid'] ?? null)
+            ->setTargetPageUid((int) ($this->settings['listPid'] ?? null))
             ->build();
 
         $allYearsUri = $this->uriBuilder
@@ -183,17 +187,17 @@ class NewsController extends BaseNewsController
             ->uriFor();
 
         $result = [
-            'years' => [
-                'all' => [
-                    'link' => $allYearsUri,
-                    'active' => !$overwriteDemandYear,
-                    'count' => 0,
-                ],
-                'list' => [],
-            ],
             'settings' => [
                 'listLink' => $listLink,
                 'templateLayout' => $this->settings['templateLayout'],
+            ],
+            'years' => [
+                'all' => [
+                    'active' => !$overwriteDemandYear,
+                    'count' => 0,
+                    'link' => $allYearsUri,
+                ],
+                'list' => [],
             ],
         ];
 
@@ -208,11 +212,11 @@ class NewsController extends BaseNewsController
             $result['years']['all']['count'] += $count;
 
             $year = [
-                'title' => $yearTitle,
-                'link' => $yearUri,
                 'active' => $overwriteDemandYear === $yearTitle && !$overwriteDemandMonth,
                 'count' => $count,
+                'link' => $yearUri,
                 'months' => [],
+                'title' => $yearTitle,
             ];
 
             foreach ($months as $month => $count) {
@@ -224,15 +228,15 @@ class NewsController extends BaseNewsController
                     ->uriFor(null, ['overwriteDemand' => ['year' => $yearTitle, 'month' => $monthTitle]]);
 
                 $year['months'][] = [
-                    'title' => $monthTitle,
-                    'link' => $monthUri,
                     'active' => $overwriteDemandYear === $yearTitle && $overwriteDemandMonth === $monthTitle,
                     'count' => $count,
+                    'link' => $monthUri,
+                    'title' => $monthTitle,
                 ];
             }
 
             $result['years']['list'][] = $year;
         }
-        return $this->jsonResponse(json_encode($result));
+        return $this->jsonResponse(json_encode($result) ?: null);
     }
 }

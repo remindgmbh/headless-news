@@ -8,6 +8,9 @@ use GeorgRinger\News\Controller\TagController as BaseTagController;
 use Psr\Http\Message\ResponseInterface;
 use Remind\HeadlessNews\Service\JsonService;
 
+/**
+ * @property \TYPO3Fluid\Fluid\View\AbstractTemplateView $view
+ */
 class TagController extends BaseTagController
 {
     private ?JsonService $jsonService = null;
@@ -18,11 +21,7 @@ class TagController extends BaseTagController
     }
 
     /**
-     * List tags
-     *
-     * @param array $overwriteDemand
-     *
-     * @return ResponseInterface
+     * @param mixed[] $overwriteDemand
      */
     public function listAction(array $overwriteDemand = null): ResponseInterface
     {
@@ -30,11 +29,11 @@ class TagController extends BaseTagController
         $renderingContext = $this->view->getRenderingContext();
         $variables = $renderingContext->getVariableProvider()->getAll();
 
-        /** @var array $pageData */
+        /** @var mixed[] $pageData */
         $pageData = $variables['pageData'];
         $listPid = $this->settings['listPid'] ? ((int) $this->settings['listPid']) : $pageData['uid'];
 
-        /** @var \TYPO3\CMS\Extbase\Persistence\QueryResultInterface $tagsQueryResult */
+        /** @var \TYPO3\CMS\Extbase\Persistence\QueryResultInterface<\GeorgRinger\News\Domain\Model\Tag> $tagsQueryResult */
         $tagsQueryResult = $variables['tags'];
 
         $overwriteDemandTags = $overwriteDemand ? (int)($overwriteDemand['tags'] ?? false) : false;
@@ -45,15 +44,15 @@ class TagController extends BaseTagController
             ->uriFor(null, null, 'News');
 
         $result = [
+            'settings' => [
+                'templateLayout' => $this->settings['templateLayout'] ?? null,
+            ],
             'tags' => [
                 'all' => [
                     'active' => !$overwriteDemandTags,
                     'link' => $uri,
                 ],
                 'list' => [],
-            ],
-            'settings' => [
-                'templateLayout' => $this->settings['templateLayout'] ?? null,
             ],
         ];
 
@@ -65,13 +64,13 @@ class TagController extends BaseTagController
                 ->setTargetPageUid($listPid)
                 ->uriFor(null, ['overwriteDemand' => ['tags' => $tag->getUid()]], 'News');
 
-            $tagJson = $this->jsonService->serializeTag($tag);
+            $tagJson = $this->jsonService?->serializeTag($tag);
             $tagJson['link'] = $uri;
             $tagJson['active'] = $overwriteDemandTags === $tag->getUid();
 
             $result['tags']['list'][] = $tagJson;
         }
 
-        return $this->jsonResponse(json_encode($result));
+        return $this->jsonResponse(json_encode($result) ?: null);
     }
 }

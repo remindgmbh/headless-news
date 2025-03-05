@@ -18,9 +18,13 @@ abstract class AbstractModifySolrDocumentEventListener
         private readonly LinkFactory $linkFactory,
     ) {
         $pageConfig = ConfigUtility::getRootPageConfig();
-        $this->detailPageUid = (int) $pageConfig['news']['detailPage'] ?? 0;
+        $this->detailPageUid = (int) ($pageConfig['news']['detailPage'] ?? null);
     }
 
+    /**
+     * @param mixed[] $document
+     * @return mixed[]
+     */
     protected function addLink(SearchResult $searchResult, array $document): array
     {
         if ($searchResult->getType() === 'tx_news_domain_model_news') {

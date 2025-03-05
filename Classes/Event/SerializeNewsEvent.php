@@ -1,21 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Remind\HeadlessNews\Event;
 
 use GeorgRinger\News\Domain\Model\News;
 
 final class SerializeNewsEvent
 {
-    /**
-     * @var News
-     */
-    private $news;
+    private News $news;
 
     /**
-     * @var array
+     * @var mixed[]
      */
-    private $values;
+    private array $values;
 
+    /**
+     * @param mixed[] $values
+     */
     public function __construct(News $news, array $values)
     {
         $this->news = $news;
@@ -34,11 +36,17 @@ final class SerializeNewsEvent
         return $this;
     }
 
+    /**
+     * @return mixed[]
+     */
     public function getValues(): array
     {
         return $this->values;
     }
 
+    /**
+     * @param mixed[] $values
+     */
     public function setValues(array $values): self
     {
         $this->values = $values;
