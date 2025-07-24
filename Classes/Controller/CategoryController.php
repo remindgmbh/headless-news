@@ -7,6 +7,7 @@ namespace Remind\HeadlessNews\Controller;
 use GeorgRinger\News\Controller\CategoryController as BaseCategoryController;
 use Psr\Http\Message\ResponseInterface;
 use Remind\HeadlessNews\Service\JsonService;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class CategoryController extends BaseCategoryController
 {
@@ -36,7 +37,7 @@ class CategoryController extends BaseCategoryController
         /** @var array $pageData */
         $pageData = $variables['pageData'];
 
-        $overwriteDemandCategories = $overwriteDemand ? (int)($overwriteDemand['categories'] ?? false) : false;
+        $overwriteDemandCategories = $overwriteDemand ? (int) ($overwriteDemand['categories'] ?? false) : false;
 
         $listPid = $this->settings['listPid'] ? ((int) $this->settings['listPid']) : $pageData['uid'];
 
@@ -92,14 +93,28 @@ class CategoryController extends BaseCategoryController
         $categoryJson['link'] = $uri;
         $categoryJson['active'] = $overwriteDemandCategories === $item->getUid();
 
+        $selectedCategories = false;
+        if ($this->settings['categories']) {
+            $selectedCategories = array_map(
+                'intval',
+                GeneralUtility::trimExplode(',', $this->settings['categories'] ?? [])
+            );
+        }
+
         if (isset($category['children'])) {
             $categoryJson['children'] = [];
             foreach ($category['children'] as $childCategory) {
-                $categoryJson['children'][] = $this->processCategory(
-                    $childCategory,
-                    $listPid,
-                    $overwriteDemandCategories
-                );
+                $childCategoryUid = $childCategory['item']->getUid();
+                if (
+                    !$selectedCategories ||
+                    in_array($childCategoryUid, $selectedCategories, true)
+                ) {
+                    $categoryJson['children'][] = $this->processCategory(
+                        $childCategory,
+                        $listPid,
+                        $overwriteDemandCategories
+                    );
+                }
             }
         }
 
