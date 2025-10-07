@@ -81,6 +81,7 @@ class NewsController extends BaseNewsController
                 'listLink' => $listLink,
                 'templateLayout' => $this->settings['templateLayout'],
             ],
+            'totalCount' => count($variables['news'] ?? []),
         ];
 
         $event = $this->eventDispatcher->dispatch(new NewsListActionEvent($result, $this->settings));
