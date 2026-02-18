@@ -6,7 +6,6 @@ namespace Remind\HeadlessNews\EventListener;
 
 use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\Result\SearchResult;
 use Remind\Headless\Utility\ConfigUtility;
-use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Frontend\Typolink\LinkFactory;
 
 abstract class AbstractModifySolrDocumentEventListener
@@ -14,7 +13,6 @@ abstract class AbstractModifySolrDocumentEventListener
     private int $detailPageUid = 0;
 
     public function __construct(
-        private readonly UriBuilder $uriBuilder,
         private readonly LinkFactory $linkFactory,
     ) {
         $pageConfig = ConfigUtility::getRootPageConfig();
@@ -36,10 +34,14 @@ abstract class AbstractModifySolrDocumentEventListener
                 $document['link'] = $searchResult['externalUrl_stringS'];
             } else {
                 $uid = $searchResult['uid'];
-                $document['link'] = $this->uriBuilder
-                    ->reset()
-                    ->setTargetPageUid($this->detailPageUid)
-                    ->uriFor('detail', ['news' => $uid], 'News', 'news', 'pi1');
+                $document['link'] = $this->linkFactory
+                    ->createUri(
+                        $this->detailPageUid
+                        . '?tx_news_pi1[action]=detail'
+                        . '&tx_news_pi1[controller]=News'
+                        . '&tx_news_pi1[news]=' . $uid
+                    )
+                    ->getUrl();
             }
         }
         return $document;
