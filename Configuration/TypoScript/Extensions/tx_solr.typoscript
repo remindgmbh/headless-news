@@ -1,7 +1,7 @@
 plugin.tx_solr.index.queue {
     news = 1
     news {
-        table = tx_news_domain_model_news
+        type = tx_news_domain_model_news
 
         additionalWhereClause = tx_headless_news_no_search = 0
 

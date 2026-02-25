@@ -91,7 +91,7 @@ class CategoryController extends BaseCategoryController
         if ($this->settings['categories']) {
             $selectedCategories = array_map(
                 'intval',
-                GeneralUtility::trimExplode(',', $this->settings['categories'] ?? [])
+                GeneralUtility::trimExplode(',', $this->settings['categories'])
             );
         }
 
