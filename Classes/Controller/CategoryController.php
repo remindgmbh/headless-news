@@ -6,6 +6,7 @@ namespace Remind\HeadlessNews\Controller;
 
 use GeorgRinger\News\Controller\CategoryController as BaseCategoryController;
 use Psr\Http\Message\ResponseInterface;
+use Remind\HeadlessNews\Event\CategoryListActionEvent;
 use Remind\HeadlessNews\Service\JsonService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -65,6 +66,9 @@ class CategoryController extends BaseCategoryController
                 $overwriteDemandCategories
             );
         }
+
+        $event = $this->eventDispatcher->dispatch(new CategoryListActionEvent($result, $this->request, $this->settings));
+        $result = $event->getValues();
 
         return $this->jsonResponse(json_encode($result) ?: null);
     }
