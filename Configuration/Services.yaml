@@ -27,5 +27,9 @@ services:
     tags:
       - name: event.listener
 
+  Remind\HeadlessNews\EventListener\NewsMetaDescriptionEventListener:
+    tags:
+      - name: event.listener
+
   Remind\HeadlessNews\Service\JsonService:
     shared: false
