@@ -12,13 +12,18 @@ final class NewsMetaDescriptionEventListener
 {
     public function __construct(
         private readonly MetaTagManagerRegistry $metaTags,
-    ) {}
+    ) {
+
+    }
 
     public function __invoke(NewsDetailActionEvent $event): void
     {
         $news = $event->getAssignedValues()['newsItem'] ?? null;
 
-        if ($news instanceof News && $news->getDescription() !== '') {
+        if (
+            $news instanceof News &&
+            $news->getDescription() !== ''
+        ) {
             $this->metaTags->getManagerForProperty('description')
                 ->addProperty('description', $news->getDescription(), [], true);
         }
