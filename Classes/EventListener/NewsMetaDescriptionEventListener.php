@@ -13,7 +13,6 @@ final class NewsMetaDescriptionEventListener
     public function __construct(
         private readonly MetaTagManagerRegistry $metaTags,
     ) {
-
     }
 
     public function __invoke(NewsDetailActionEvent $event): void
